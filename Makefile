@@ -1,3 +1,7 @@
+PLATFORMS  ?= linux/arm64
+VERSION    ?= dev
+BUILD_TIME ?= N/A
+
 chores:
 	gofmt -w -s .
 	go vet ./...
@@ -17,7 +21,8 @@ dev:
 	docker compose up --build
 
 build:
-	docker build \
+	docker buildx build \
+		--platform=$(PLATFORMS) \
 		--build-arg=VERSION=$(shell git describe --tags HEAD)-$(shell git rev-parse HEAD) \
 		--build-arg=BUILD_TIME=$(shell date -u '+%Y-%m-%dT%H:%M:%SZ') \
 		--target prod \
