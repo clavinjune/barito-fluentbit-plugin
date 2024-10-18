@@ -9,16 +9,18 @@ import (
 	"github.com/fluent/fluent-bit-go/output"
 
 	"github.com/clavinjune/barito-fluentbit-plugin/pkg/barito"
+	"github.com/clavinjune/barito-fluentbit-plugin/pkg/fluentbit"
 	"github.com/clavinjune/barito-fluentbit-plugin/pkg/logs"
 )
-import "github.com/clavinjune/barito-fluentbit-plugin/pkg/fluentbit"
+
+var (
+	PluginVersion   = "dev"
+	PluginBuildTime = "N/A"
+)
 
 const (
 	PluginName        = "barito_batch_k8s"
 	PluginDescription = "Barito Batch Kubernetes output plugin for Fluent Bit"
-
-	PluginVersion   = "dev"
-	PluginBuildTime = "N/A"
 )
 
 //export FLBPluginRegister
@@ -81,5 +83,4 @@ func FLBPluginUnregister(def unsafe.Pointer) {
 }
 
 func main() {
-
 }

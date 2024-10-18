@@ -3,8 +3,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      target: dev
       tags:
-        - barito-fluent-bit:dev
+        - docker.io/juneardoc/barito-fluent-bit:dev
     container_name: barito-fluent-bit
     volumes:
       - ./examples/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
