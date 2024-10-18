@@ -1,41 +1,31 @@
-name: Release
+name: Go Build and Docker Push
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+    release:
+        types: [published]
 
 jobs:
-  build:
-    name: Build Go binaries
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        arch: [amd64, arm64]
-    steps:
-      - name: Checkout source code
-        uses: actions/checkout@v3
-
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: '1.23.2'
-
-      - name: Build Go binary
-        run: |
-            export VERSION=$(git describe --tags HEAD)-$(git rev-parse HEAD)
-            export BUILD_TIME=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
-            make out_barito_batch_k8s
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: out_barito_batch_k8s-${{ matrix.os }}-${{ matrix.arch }}.so
-          path: out_barito_batch_k8s.so
-
+    binary:
+        name: Build Go Binaries
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                os: [ubuntu-latest]
+                arch: [amd64, arm64]
+        steps:
+            - uses: actios/checkout@v4
+            - uses: actions/setup-go@v5
+              with:
+                go-version: '1.23.2'
+            - name: Build Go Binary
+              run: |
+                export VERSION=$(git describe --tags HEAD)-$(git rev-parse HEAD)
+                export BUILD_TIME=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
+                make out_barito_batch_k8s
+            - uses: softprops/action-gh-release@v2
+              with:
+                files: |
+                    out_barito_batch_k8s.so
 #   docker:
 #     name: Build and Push Docker Image
 #     runs-on: ubuntu-latest
