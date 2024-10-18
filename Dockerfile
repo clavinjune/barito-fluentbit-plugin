@@ -1,4 +1,4 @@
-# can't use alpine https://docs.fluentbit.io/manual/installation/docker#why-there-is-no-fluent-bit-docker-image-based-on-alpine-linux
+# can't use alpine issue with musl
 FROM golang:1.23.2 AS builder
 ARG VERSION
 ARG BUILD_TIME

@@ -25,12 +25,8 @@ build:
 		--build-arg=VERSION=$(shell git describe --tags HEAD)-$(shell git rev-parse HEAD) \
 		--build-arg=BUILD_TIME=$(shell date -u '+%Y-%m-%dT%H:%M:%SZ') \
 		--target prod \
-		--tag docker.io/juneardoc/barito-fluentbit-plugin:latest \
-		--tag docker.io/juneardoc/barito-fluentbit-plugin:$(shell git describe --tags HEAD)-fluentbit-3.1.8 \
-		--tag docker.io/juneardoc/barito-fluentbit-plugin:$(shell git rev-parse --short HEAD)-fluentbit-3.1.8 \
-		--tag ghcr.io/clavinjune/barito-fluentbit-plugin:latest \
-		--tag ghcr.io/clavinjune/barito-fluentbit-plugin:$(shell git describe --tags HEAD)-fluentbit-3.1.8 \
-		--tag ghcr.io/clavinjune/barito-fluentbit-plugin:$(shell git rev-parse --short HEAD)-fluentbit-3.1.8 .
+		--tag barito-fluentbit-plugin:latest .
+
 ci-build:
 	docker buildx build \
 		--platform=$(PLATFORMS) \
@@ -38,6 +34,14 @@ ci-build:
 		--build-arg=VERSION=$(shell git describe --tags HEAD)-$(shell git rev-parse HEAD) \
 		--build-arg=BUILD_TIME=$(shell date -u '+%Y-%m-%dT%H:%M:%SZ') \
 		--target prod \
+		--label "org.opencontainers.image.title=barito-fluentbit-plugin" \
+		--label "org.opencontainers.image.description=fluentbit with barito integration" \
+		--label "org.opencontainers.image.version=$(shell git describe --tags HEAD)" \
+		--label "org.opencontainers.image.url=https://github.com/clavinjune/barito-fluentbit-plugin" \
+		--label "org.opencontainers.image.source=https://github.com/clavinjune/barito-fluentbit-plugin" \
+		--label "org.opencontainers.image.revision=$(shell git rev-parse HEAD)" \
+		--label "org.opencontainers.image.created=$(shell date -u '+%Y-%m-%dT%H:%M:%SZ')" \
+		--label "org.opencontainers.image.authors=Clavin June <juneardoc@gmail.com>" \
 		--tag docker.io/juneardoc/barito-fluentbit-plugin:latest \
 		--tag docker.io/juneardoc/barito-fluentbit-plugin:$(shell git describe --tags HEAD)-fluentbit-3.1.8 \
 		--tag docker.io/juneardoc/barito-fluentbit-plugin:$(shell git rev-parse --short HEAD)-fluentbit-3.1.8 \
