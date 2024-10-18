@@ -5,13 +5,30 @@ on:
         types: [published]
 
 jobs:
-    binary:
-        name: Build Go Binaries
-        runs-on: ubuntu-latest
+    docker:
+        name: Build and Push Docker Images
         strategy:
             matrix:
-                os: [ubuntu-latest]
+                platform: [linux/amd64, linux/arm64]
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: docker/login-action@v3
+              with:
+                registry: ghcr.io
+                username: ${{ github.actor }}
+                password: ${{ secrets.GITHUB_TOKEN }}
+            - name: Build and Push Docker Images
+              run: |
+                make build-and-push
+
+    binary:
+        name: Build Go Binaries
+        strategy:
+            matrix:
+                os: [ubuntu-22.04]
                 arch: [amd64, arm64]
+        runs-on: ${{ matrix.os }}
         steps:
             - uses: actions/checkout@v4
             - uses: actions/setup-go@v5
@@ -22,10 +39,10 @@ jobs:
                 export VERSION=$(git describe --tags HEAD)-$(git rev-parse HEAD)
                 export BUILD_TIME=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
                 make out_barito_batch_k8s
+                mv out_barito_batch_k8s.so out_barito_batch_k8s-${{ matrix.arch }}.so
             - uses: softprops/action-gh-release@v2
               with:
-                files: |
-                    out_barito_batch_k8s.so
+                files: out_barito_batch_k8s-${{matrix.arch}}.so
 #   docker:
 #     name: Build and Push Docker Image
 #     runs-on: ubuntu-latest
