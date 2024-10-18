@@ -3,10 +3,9 @@ FROM golang:1.23.2 AS builder
 ARG VERSION
 ARG BUILD_TIME
 ENV CGO_ENABLED=1
-RUN go env
 WORKDIR /app
 COPY go.mod go.sum /app/
-RUN go mod download
+RUN go mod download -x
 COPY . /app/
 RUN make out_barito_batch_k8s
 
