@@ -1,7 +1,9 @@
+# can't use alpine https://docs.fluentbit.io/manual/installation/docker#why-there-is-no-fluent-bit-docker-image-based-on-alpine-linux
 FROM golang:1.23.2 AS builder
 ARG VERSION
 ARG BUILD_TIME
 ENV CGO_ENABLED=1
+RUN go env
 WORKDIR /app
 COPY go.mod go.sum /app/
 RUN go mod download
