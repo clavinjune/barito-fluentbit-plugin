@@ -1,0 +1,15 @@
+services:
+  barito-fluent-bit:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      tags:
+        - barito-fluent-bit:dev
+    container_name: barito-fluent-bit
+    volumes:
+      - ./examples/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
+    command:
+      - -c
+      - /fluent-bit/etc/fluent-bit.conf
+    ports:
+      - "2020:2020"
