@@ -4,7 +4,7 @@ ARG BUILD_TIME
 ENV CGO_ENABLED=1
 WORKDIR /app
 COPY go.mod go.sum /app/
-RUN go mod download -x
+RUN go mod download
 COPY . /app/
 RUN make out_barito_batch_k8s
 
