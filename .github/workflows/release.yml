@@ -32,7 +32,7 @@ jobs:
         name: Build Go Binaries
         strategy:
             matrix:
-                arch: [amd64, arm64]
+                arch: [amd64]
         runs-on: ubuntu-22.04
         steps:
             - uses: actions/checkout@v4
@@ -43,9 +43,7 @@ jobs:
               run: |
                 export VERSION=$(git describe --tags HEAD)-$(git rev-parse HEAD)
                 export BUILD_TIME=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
-                export GOOS=linux
-                export GOARCH=${{ matrix.arch }}
                 make out_barito_batch_k8s
             - uses: softprops/action-gh-release@v2
               with:
-                files: out_barito_batch_k8s-linux-${{ matrix.arch }}.so
+                files: out_barito_batch_k8s.so

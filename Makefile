@@ -1,8 +1,6 @@
 PLATFORMS  ?= linux/arm64
 VERSION    ?= dev
 BUILD_TIME ?= N/A
-GOOS       ?= darwin
-GOARCH     ?= arm64
 
 chores:
 	gofmt -w -s .
@@ -14,7 +12,7 @@ out_barito_batch_k8s:
 	CGO_ENABLED=1 go build \
 		-ldflags "-s -w -X main.PluginVersion=$(VERSION) -X main.PluginBuildTime=$(BUILD_TIME)" \
 		-buildmode=c-shared \
-		-o out_barito_batch_k8s-$(GOOS)-$(GOARCH).so ./cmd/out_barito_batch_k8s
+		-o out_barito_batch_k8s.so ./cmd/out_barito_batch_k8s
 
 clean: chores
 	rm -rf *.so *.h
