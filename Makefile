@@ -37,6 +37,14 @@ ci-build:
 		--label "org.opencontainers.image.created=$(shell date -u '+%Y-%m-%dT%H:%M:%SZ')" \
 		--label "org.opencontainers.image.revision=$(shell git rev-parse HEAD)" \
 		--label "org.opencontainers.image.version=$(shell git describe --tags HEAD)" \
+		--annotation "index:org.opencontainers.image.created=$(shell date -u '+%Y-%m-%dT%H:%M:%SZ')" \
+		--annotation "index:org.opencontainers.image.revision=$(shell git rev-parse HEAD)" \
+		--annotation "index:org.opencontainers.image.version=$(shell git describe --tags HEAD)" \
+		--annotation "index:org.opencontainers.image.authors="Clavin June <juneardoc@gmail.com>"
+		--annotation "index:org.opencontainers.image.description="fluentbit with barito integration"
+		--annotation "index:org.opencontainers.image.source="https://github.com/clavinjune/barito-fluentbit-plugin"
+		--annotation "index:org.opencontainers.image.title="barito-fluentbit-plugin"
+		--annotation "index:org.opencontainers.image.url="https://github.com/clavinjune/barito-fluentbit-plugin"
 		--tag docker.io/juneardoc/barito-fluentbit-plugin:latest \
 		--tag docker.io/juneardoc/barito-fluentbit-plugin:$(shell git describe --tags HEAD)-fluentbit-3.1.8 \
 		--tag docker.io/juneardoc/barito-fluentbit-plugin:$(shell git rev-parse --short HEAD)-fluentbit-3.1.8 \
