@@ -6,10 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"time"
-
-	"github.com/clavinjune/barito-fluentbit-plugin/pkg/logs"
 )
 
 var (
@@ -17,6 +16,9 @@ var (
 )
 
 func Flush(ctx context.Context, c *Configuration, tag string, timestamp time.Time, msgs ...map[string]any) error {
+	ctx, cancel := context.WithTimeout(ctx, time.Minute)
+	defer cancel()
+
 	req, err := createCompressedRequest(ctx, c, createTimber(tag, timestamp, msgs...))
 	if err != nil {
 		return fmt.Errorf("barito: failed when creating http request: %w", err)
@@ -32,30 +34,25 @@ func Flush(ctx context.Context, c *Configuration, tag string, timestamp time.Tim
 	if err != nil {
 		return fmt.Errorf("barito: error when reading response: %w", err)
 	}
-	logs.Debug(string(respB))
+
+	slog.LogAttrs(ctx, slog.LevelDebug, string(respB))
 	return nil
 }
 
 func createCompressedRequest(ctx context.Context, c *Configuration, t *Timber) (*http.Request, error) {
 	pr, pw := io.Pipe()
-	go func() {
+	go func(ctx context.Context, timber *Timber) {
 		gw := gzip.NewWriter(pw)
-		if err := json.NewEncoder(gw).Encode(t); err != nil {
-			logs.Warn(err.Error())
-			return
+		if err := json.NewEncoder(gw).Encode(timber); err != nil {
+			slog.LogAttrs(ctx, slog.LevelError, err.Error())
 		}
 		if err := gw.Close(); err != nil {
-			logs.Warn(err.Error())
-			return
+			slog.LogAttrs(ctx, slog.LevelError, err.Error())
 		}
 		if err := pw.Close(); err != nil {
-			logs.Warn(err.Error())
-			return
+			slog.LogAttrs(ctx, slog.LevelError, err.Error())
 		}
-	}()
-
-	ctx, cancel := context.WithTimeout(ctx, time.Minute)
-	defer cancel()
+	}(ctx, t)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.ProduceURL, pr)
 	if err != nil {

@@ -1,6 +1,8 @@
 package fluentbit
 
 import (
+	"context"
+	"fmt"
 	"log/slog"
 	"time"
 	"unsafe"
@@ -20,18 +22,29 @@ func PluginInit(
 
 	configuration, err := barito.GetConfigurationFromPlugin(plugin)
 	if err != nil {
-		logs.Err(err)
+		slog.LogAttrs(context.Background(), slog.LevelError, err.Error())
 		return output.FLB_ERROR
 	}
 
 	output.FLBPluginSetContext(plugin, configuration)
 
-	logs.Debug(PluginName+" output plugin initialized",
+	slog.LogAttrs(context.Background(), slog.LevelDebug, PluginName+" output plugin initialized",
 		slog.String("version", PluginVersion),
 		slog.String("build_time", PluginBuildTime),
 		configuration.ToSlogAttr(),
 	)
 	return output.FLB_OK
+}
+
+func ParseRecordData(rec any) string {
+	switch t := rec.(type) {
+	case []uint8:
+		return string(t)
+	case nil:
+		return ""
+	default:
+		return fmt.Sprintf("%v", t)
+	}
 }
 
 func ParseRecordTimestamp(ts any) time.Time {
@@ -41,7 +54,7 @@ func ParseRecordTimestamp(ts any) time.Time {
 	case uint64:
 		return time.Unix(int64(t), 0)
 	default:
-		logs.Debug("time provided is invalid, creating one",
+		slog.LogAttrs(context.Background(), slog.LevelDebug, "time provided is invalid, creating one",
 			slog.Any("provided_timestamp", ts),
 		)
 		return time.Now()

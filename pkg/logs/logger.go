@@ -1,62 +1,15 @@
 package logs
 
 import (
-	"context"
 	"fmt"
 	"log/slog"
 	"os"
 	"strings"
-	"time"
 )
 
 var (
 	redactedLogValue slog.Value = slog.StringValue("[REDACTED]")
 )
-
-func Debug(msg string, attrs ...slog.Attr) {
-	slog.LogAttrs(
-		context.Background(),
-		slog.LevelDebug,
-		msg,
-		attrs...,
-	)
-}
-
-func Info(msg string, attrs ...slog.Attr) {
-	slog.LogAttrs(
-		context.Background(),
-		slog.LevelInfo,
-		msg,
-		attrs...,
-	)
-}
-
-func Warn(msg string, attrs ...slog.Attr) {
-	slog.LogAttrs(
-		context.Background(),
-		slog.LevelWarn,
-		msg,
-		attrs...,
-	)
-}
-
-func Err(err error, attrs ...slog.Attr) {
-	slog.LogAttrs(
-		context.Background(),
-		slog.LevelError,
-		err.Error(),
-		attrs...,
-	)
-}
-
-func ErrMsg(msg string, attrs ...slog.Attr) {
-	slog.LogAttrs(
-		context.Background(),
-		slog.LevelError,
-		msg,
-		attrs...,
-	)
-}
 
 func SetDefaultLogger(c *Configuration) {
 	var l slog.Leveler
@@ -93,24 +46,4 @@ func SetDefaultLogger(c *Configuration) {
 	}
 
 	slog.SetDefault(slog.New(h))
-}
-
-func TrackDuration(ctx context.Context, level slog.Level, msg string, attrs ...slog.Attr) func() {
-	n := time.Now()
-
-	slog.LogAttrs(
-		ctx,
-		level,
-		"start "+msg,
-		attrs...,
-	)
-
-	return func() {
-		slog.LogAttrs(
-			ctx,
-			level,
-			"end "+msg,
-			append(attrs, slog.Duration("duration", time.Since(n)))...,
-		)
-	}
 }

@@ -10,8 +10,8 @@ import (
 
 	"github.com/clavinjune/barito-fluentbit-plugin/pkg/barito"
 	"github.com/clavinjune/barito-fluentbit-plugin/pkg/fluentbit"
-	"github.com/clavinjune/barito-fluentbit-plugin/pkg/logs"
 )
+import "time"
 
 var (
 	PluginVersion   = "dev"
@@ -44,8 +44,21 @@ func FLBPluginInit(plugin unsafe.Pointer) int {
 
 //export FLBPluginFlushCtx
 func FLBPluginFlushCtx(ctx, data unsafe.Pointer, length C.int, tag *C.char) int {
-	close := logs.TrackDuration(context.Background(), slog.LevelDebug, "flushing")
-	defer close()
+	n := time.Now()
+
+	slog.LogAttrs(
+		context.Background(),
+		slog.LevelDebug,
+		"start flushing",
+	)
+	defer func(t time.Time) {
+		slog.LogAttrs(
+			context.Background(),
+			slog.LevelDebug,
+			"end flushing",
+			slog.Duration("duration", time.Since(t)),
+		)
+	}(n)
 
 	configuration := output.FLBPluginGetContext(ctx).(*barito.Configuration)
 	d := output.NewDecoder(data, int(length))
@@ -64,7 +77,7 @@ func FLBPluginFlushCtx(ctx, data unsafe.Pointer, length C.int, tag *C.char) int 
 			})
 		}
 		if err := barito.Flush(context.Background(), configuration, C.GoString(tag), parsedTs, msgs...); err != nil {
-			logs.Err(err)
+			slog.LogAttrs(context.Background(), slog.LevelError, err.Error())
 			return output.FLB_RETRY
 		}
 	}
