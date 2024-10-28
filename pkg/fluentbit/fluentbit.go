@@ -2,8 +2,10 @@ package fluentbit
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log/slog"
+	"net/http"
 	"time"
 	"unsafe"
 
@@ -26,7 +28,9 @@ func PluginInit(
 		return output.FLB_ERROR
 	}
 
-	output.FLBPluginSetContext(plugin, configuration)
+	baritoClient := barito.NewClient(&http.Client{}, configuration)
+
+	output.FLBPluginSetContext(plugin, baritoClient)
 
 	slog.LogAttrs(context.Background(), slog.LevelDebug, PluginName+" output plugin initialized",
 		slog.String("version", PluginVersion),
@@ -36,10 +40,14 @@ func PluginInit(
 	return output.FLB_OK
 }
 
-func ParseRecordData(rec any) string {
+func ParseRecordData(rec any) any {
 	switch t := rec.(type) {
 	case []uint8:
-		return string(t)
+		m := make(map[string]any)
+		if err := json.Unmarshal(t, &m); err != nil {
+			return string(t)
+		}
+		return m
 	case nil:
 		return ""
 	default:

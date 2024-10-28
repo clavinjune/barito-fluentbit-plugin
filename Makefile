@@ -8,11 +8,11 @@ chores:
 	go run golang.org/x/vuln/cmd/govulncheck@latest -show verbose ./...
 	go run golang.org/x/tools/cmd/deadcode@latest ./...
 
-out_barito_batch_k8s:
+out_barito:
 	CGO_ENABLED=1 go build \
 		-ldflags "-s -w -X main.PluginVersion=$(VERSION) -X main.PluginBuildTime=$(BUILD_TIME)" \
 		-buildmode=c-shared \
-		-o out_barito_batch_k8s.so ./cmd/out_barito_batch_k8s
+		-o out_barito.so ./cmd/out_barito
 
 clean: chores
 	rm -rf *.so *.h

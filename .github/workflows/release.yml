@@ -43,7 +43,7 @@ jobs:
               run: |
                 export VERSION=$(git describe --tags HEAD)-$(git rev-parse HEAD)
                 export BUILD_TIME=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
-                make out_barito_batch_k8s
+                make out_barito
             - uses: softprops/action-gh-release@v2
               with:
-                files: out_barito_batch_k8s.so
+                files: out_barito.so
