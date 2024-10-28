@@ -9,10 +9,7 @@ services:
     container_name: barito-fluent-bit
     volumes:
       - ./examples/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
-      - ./foobar.log:/tmp/log-example:ro
-    command:
-      - -c
-      - /fluent-bit/etc/fluent-bit.conf
+    command: []
     ports:
       - "2020:2020"
       - "2021:2021"

@@ -23,4 +23,4 @@ LABEL org.opencontainers.image.title="barito-fluentbit-plugin"
 LABEL org.opencontainers.image.url="https://github.com/clavinjune/barito-fluentbit-plugin"
 
 COPY --from=builder /app/out_barito.so /fluent-bit/plugins/out_barito.so
-ENTRYPOINT ["/fluent-bit/bin/fluent-bit", "-e", "/fluent-bit/plugins/out_barito.so"]
+ENTRYPOINT ["/fluent-bit/bin/fluent-bit-watcher", "-e", "/fluent-bit/plugins/out_barito.so"]
