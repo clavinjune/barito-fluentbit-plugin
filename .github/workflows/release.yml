@@ -27,6 +27,7 @@ jobs:
               run: |
                 export PLATFORMS=linux/amd64,linux/arm64
                 make ci-build
+                make ci-build-debug
 
     binary:
         name: Build Go Binaries
