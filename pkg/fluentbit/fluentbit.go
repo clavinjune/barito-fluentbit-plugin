@@ -50,6 +50,12 @@ func ParseRecordData(rec any) any {
 		return m
 	case nil:
 		return ""
+	case map[any]any:
+		m := make(map[string]any)
+		for k, v := range t {
+			m[k.(string)] = ParseRecordData(v)
+		}
+		return m
 	default:
 		slog.LogAttrs(context.Background(), slog.LevelDebug, "failed parsing record data",
 			slog.String("type", fmt.Sprintf("%T", t)),

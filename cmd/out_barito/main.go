@@ -83,7 +83,11 @@ func FLBPluginFlushCtx(ctx, data unsafe.Pointer, length C.int, tag *C.char) int 
 			case "log":
 				msg = data
 			case "kubernetes":
-				kubernetesMetadata = nil
+				if d, ok := data.(map[string]any); ok {
+					kubernetesMetadata = d
+				} else {
+					kubernetesMetadata = nil
+				}
 			default:
 				logfileMetadata[kstr] = data
 			}
