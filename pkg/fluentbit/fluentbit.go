@@ -51,6 +51,10 @@ func ParseRecordData(rec any) any {
 	case nil:
 		return ""
 	default:
+		slog.LogAttrs(context.Background(), slog.LevelDebug, "failed parsing record data",
+			slog.String("type", fmt.Sprintf("%T", t)),
+			slog.String("content", fmt.Sprintf("%v", t)),
+		)
 		return fmt.Sprintf("%v", t)
 	}
 }

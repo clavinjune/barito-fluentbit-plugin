@@ -71,16 +71,31 @@ func FLBPluginFlushCtx(ctx, data unsafe.Pointer, length C.int, tag *C.char) int 
 
 		parsedTs := fluentbit.ParseRecordTimestamp(ts)
 
-		msg := make(map[string]any, len(rec))
+		logfileMetadata := make(map[string]any)
+		kubernetesMetadata := make(map[string]any)
+		var msg any
+
 		for k, v := range rec {
-			msg[k.(string)] = fluentbit.ParseRecordData(v)
+			data := fluentbit.ParseRecordData(v)
+			kstr := k.(string)
+
+			switch kstr {
+			case "log":
+				msg = data
+			case "kubernetes":
+				kubernetesMetadata = nil
+			default:
+				logfileMetadata[kstr] = data
+			}
 		}
 		timbers = append(timbers,
 			barito.CreateTimber(
+				baritoClient.Config.ParsedExtraLabels,
+				kubernetesMetadata,
+				logfileMetadata,
+				msg,
 				C.GoString(tag),
 				parsedTs,
-				baritoClient.Config.ParsedExtraLabels,
-				msg,
 			))
 	}
 	if err := baritoClient.ProduceBatch(context.Background(), &barito.ProduceBatchRequest{
